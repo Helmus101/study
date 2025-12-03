@@ -191,7 +191,7 @@ export class PronoteRepository {
       description: row.description ?? undefined,
       dueDate: toIsoString(row.due_date),
       estimatedMinutes: row.estimated_minutes,
-      origin: parseJson(row.origin) as TaskRecord['origin'],
+      origin: parseJson(row.origin) as unknown as TaskRecord['origin'],
       metadata: parseJson(row.metadata),
       createdAt: toIsoString(row.created_at),
       updatedAt: toIsoString(row.updated_at)

@@ -22,6 +22,17 @@ const pronoteSchema = z
     }
   });
 
+const googleSchema = z.object({
+  clientId: z.string().min(1),
+  clientSecret: z.string().min(1),
+  redirectUri: z.string().url(),
+  scopes: z.array(z.string()).default([
+    'https://www.googleapis.com/auth/documents',
+    'https://www.googleapis.com/auth/drive.readonly',
+    'https://www.googleapis.com/auth/calendar.readonly'
+  ])
+});
+
 const appSchema = z.object({
   env: z.enum(['development', 'test', 'production']).default('development'),
   port: z.coerce.number().int().positive().default(4000),
@@ -30,10 +41,12 @@ const appSchema = z.object({
   syncCronSchedule: z.string().default('0 * * * *'),
   runInitialSyncOnStartup: z.coerce.boolean().default(true),
   logLevel: z.enum(['error', 'warn', 'info', 'http', 'verbose', 'debug', 'silly']).default('info'),
-  pronote: pronoteSchema
+  pronote: pronoteSchema,
+  google: googleSchema
 });
 
 export type PronoteApiConfig = z.infer<typeof pronoteSchema>;
+export type GoogleApiConfig = z.infer<typeof googleSchema>;
 export type AppConfig = z.infer<typeof appSchema>;
 
 export const loadConfig = (): AppConfig => {
@@ -53,6 +66,12 @@ export const loadConfig = (): AppConfig => {
       clientId: process.env.PRONOTE_CLIENT_ID ?? 'demo-client',
       clientSecret: process.env.PRONOTE_CLIENT_SECRET ?? 'demo-secret',
       defaultTimeEstimateMinutes: process.env.PRONOTE_DEFAULT_TIME_ESTIMATE_MINUTES ?? 45
+    },
+    google: {
+      clientId: process.env.GOOGLE_CLIENT_ID ?? 'demo-google-client-id',
+      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? 'demo-google-client-secret',
+      redirectUri: process.env.GOOGLE_REDIRECT_URI ?? 'http://localhost:4000/auth/google/callback',
+      scopes: process.env.GOOGLE_SCOPES ? process.env.GOOGLE_SCOPES.split(',') : undefined
     }
   });
 };

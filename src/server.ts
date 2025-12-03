@@ -6,15 +6,33 @@ import { PronoteRepository } from './db/repository';
 import { PronoteSyncQueue } from './queue/syncQueue';
 import { buildResolvers, typeDefs } from './graphql/schema';
 import { logger, Logger } from './logger';
+import { GoogleAuthService } from './google/auth';
+import { GoogleTokenRepository } from './google/tokenRepository';
+import { GoogleSyncService } from './google/googleSyncService';
+import { CalendarEventRepository } from './google/calendarRepository';
+import { createGoogleRoutes } from './google/googleRoutes';
 
 interface BuildServerOptions {
   config: AppConfig;
   repository: PronoteRepository;
   syncQueue: PronoteSyncQueue;
+  googleAuthService: GoogleAuthService;
+  googleTokenRepo: GoogleTokenRepository;
+  googleSyncService: GoogleSyncService;
+  calendarRepo: CalendarEventRepository;
   log?: Logger;
 }
 
-export const buildServer = async ({ config, repository, syncQueue, log = logger }: BuildServerOptions): Promise<{
+export const buildServer = async ({ 
+  config, 
+  repository, 
+  syncQueue, 
+  googleAuthService,
+  googleTokenRepo,
+  googleSyncService,
+  calendarRepo,
+  log = logger 
+}: BuildServerOptions): Promise<{
   app: express.Application;
   server: Server;
   apolloServer: ApolloServer<any>;
@@ -25,6 +43,15 @@ export const buildServer = async ({ config, repository, syncQueue, log = logger 
   app.get('/health', (_req, res) => {
     res.json({ status: 'ok', timestamp: new Date().toISOString() });
   });
+
+  const googleRoutes = createGoogleRoutes({
+    authService: googleAuthService,
+    tokenRepo: googleTokenRepo,
+    syncService: googleSyncService,
+    calendarRepo: calendarRepo,
+    pronoteRepo: repository
+  });
+  app.use(googleRoutes);
 
   app.get('/tasks', async (_req, res, next) => {
     try {
@@ -65,7 +92,7 @@ export const buildServer = async ({ config, repository, syncQueue, log = logger 
   });
 
   await apolloServer.start();
-  apolloServer.applyMiddleware({ app, path: '/graphql' });
+  apolloServer.applyMiddleware({ app: app as any, path: '/graphql' });
 
   app.use((error: unknown, _req: Request, res: Response, _next: NextFunction) => {
     log.error('API error', { error });

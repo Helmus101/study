@@ -1,4 +1,4 @@
-export type DataSource = 'pronote';
+export type DataSource = 'pronote' | 'google-calendar';
 
 export interface TaskRecord {
   id: string;
@@ -73,4 +73,42 @@ export interface SyncResult {
   lessons: number;
   timetableEntries: number;
   triggeredBy: string;
+}
+
+export interface GoogleOAuthToken {
+  id: string;
+  userId: string;
+  accessToken: string;
+  refreshToken: string;
+  scope: string;
+  tokenType: string;
+  expiryDate: number;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface TaskNote {
+  id: string;
+  taskId: string;
+  googleDocId?: string;
+  googleDocUrl?: string;
+  content?: string;
+  syncedAt?: string;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
+export interface CalendarEvent {
+  id: string;
+  source: DataSource;
+  sourceId: string;
+  title: string;
+  description?: string;
+  startTime: string;
+  endTime: string;
+  location?: string;
+  eventType?: string;
+  metadata: Record<string, unknown>;
+  createdAt?: string;
+  updatedAt?: string;
 }
