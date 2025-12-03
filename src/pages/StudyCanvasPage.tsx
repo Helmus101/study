@@ -1,22 +1,14 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 import { mockApi } from '../api/mockApi'
 import { queryKeys } from '../api/queryKeys'
-import { DocEditor } from '../components/canvas/DocEditor'
-import { AIAssistant } from '../components/canvas/AIAssistant'
-import { RightPanel } from '../components/canvas/RightPanel'
-import { EnvironmentControls } from '../components/canvas/EnvironmentControls'
-import { FileViewer } from '../components/canvas/FileViewer'
-import { Flashcards } from '../components/canvas/Flashcards'
-import { QuizPlaceholder } from '../components/canvas/QuizPlaceholder'
+import { StudyCanvas } from '../components/canvas/StudyCanvas'
 import { useRealtimeSync } from '../hooks/useRealtimeSync'
-import { useLayoutStore } from '../store/layoutStore'
 import { LayoutToggle } from '../components/LayoutToggle'
 import { RefreshCw } from 'lucide-react'
 import type { StudySession } from '../types'
 
 export function StudyCanvasPage() {
   const sessionId = 'default'
-  const { mode } = useLayoutStore()
   useRealtimeSync(sessionId)
   const queryClient = useQueryClient()
 
@@ -124,42 +116,12 @@ export function StudyCanvasPage() {
         </div>
       </header>
 
-      <div className={`flex-1 flex overflow-hidden ${mode === 'customizable' ? 'gap-2 p-2' : ''}`}>
-        <div className={`${mode === 'fixed' ? 'w-80' : 'w-96 rounded-xl overflow-hidden'}`}>
-          <AIAssistant suggestions={data.aiSuggestions} onPrompt={handleAIPrompt} />
-        </div>
-
-        <main className={`flex-1 flex flex-col overflow-hidden ${mode === 'customizable' ? 'rounded-xl' : ''}`}>
-          <div className="flex-1 overflow-hidden">
-            <DocEditor
-              docId={data.docId}
-              docTitle={data.docTitle}
-              docOwner={data.docOwner}
-              content={data.docContent}
-              onContentChange={content => updateDocMutation.mutate(content)}
-            />
-          </div>
-
-          <div className="max-h-[300px] overflow-y-auto scrollbar-thin">
-            <FileViewer attachments={data.attachments} />
-            <div className="grid md:grid-cols-2 border-t border-[var(--border-color)]">
-              <Flashcards flashcards={data.flashcards} />
-              <QuizPlaceholder quiz={data.quiz} />
-            </div>
-          </div>
-        </main>
-
-        <div className={`${mode === 'fixed' ? 'w-80' : 'w-96 rounded-xl overflow-hidden'}`}>
-          <RightPanel
-            calendar={data.calendar}
-            checklist={data.checklist}
-            onChecklistToggle={handleChecklistToggle}
-          />
-        </div>
-      </div>
-
-      <EnvironmentControls
-        environment={data.environment}
+      <StudyCanvas
+        sessionId={sessionId}
+        data={data}
+        onAIPrompt={handleAIPrompt}
+        onDocContentChange={content => updateDocMutation.mutate(content)}
+        onChecklistToggle={handleChecklistToggle}
         onEnvironmentChange={env => updateEnvironmentMutation.mutate(env)}
       />
     </div>

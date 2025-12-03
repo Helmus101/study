@@ -1,4 +1,4 @@
-import type { DashboardResponse, TasksResponse, StudySession } from '../types'
+import type { DashboardResponse, TasksResponse, StudySession, UserPreferences, ComponentLayout } from '../types'
 
 const delay = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
@@ -266,5 +266,97 @@ export const mockApi = {
     const response = `AI is thinking about: "${prompt}"`
     console.log('Mock API: AI prompt processed', { prompt })
     return { response }
+  },
+
+  // User Preferences API
+  getUserPreferences: async (userId: string): Promise<UserPreferences> => {
+    await delay(300)
+    // Default layout configuration
+    const defaultLayout: ComponentLayout[] = [
+      {
+        id: 'ai-assistant',
+        x: 0,
+        y: 0,
+        width: 384,
+        height: 600,
+        zIndex: 1,
+        isDraggable: true,
+        isResizable: true,
+        minSize: { width: 300, height: 400 },
+        maxSize: { width: 500, height: 800 }
+      },
+      {
+        id: 'doc-editor',
+        x: 384,
+        y: 0,
+        width: 600,
+        height: 500,
+        zIndex: 2,
+        isDraggable: true,
+        isResizable: true,
+        minSize: { width: 400, height: 300 },
+        maxSize: { width: 1200, height: 800 }
+      },
+      {
+        id: 'right-panel',
+        x: 984,
+        y: 0,
+        width: 384,
+        height: 600,
+        zIndex: 1,
+        isDraggable: true,
+        isResizable: true,
+        minSize: { width: 300, height: 400 },
+        maxSize: { width: 500, height: 800 }
+      },
+      {
+        id: 'file-viewer',
+        x: 384,
+        y: 500,
+        width: 600,
+        height: 200,
+        zIndex: 3,
+        isDraggable: true,
+        isResizable: true,
+        minSize: { width: 400, height: 150 },
+        maxSize: { width: 1200, height: 400 }
+      },
+      {
+        id: 'environment-controls',
+        x: 0,
+        y: 600,
+        width: 1368,
+        height: 80,
+        zIndex: 4,
+        isDraggable: false,
+        isResizable: false
+      }
+    ]
+
+    return {
+      id: 'pref-1',
+      userId,
+      canvasLayout: defaultLayout,
+      theme: 'auto',
+      createdAt: new Date(),
+      updatedAt: new Date()
+    }
+  },
+
+  updateUserPreferences: async (userId: string, preferences: Partial<UserPreferences>): Promise<UserPreferences> => {
+    await delay(400)
+    console.log('Mock API: Updated user preferences', { userId, preferences })
+    const existing = await mockApi.getUserPreferences(userId)
+    return {
+      ...existing,
+      ...preferences,
+      updatedAt: new Date()
+    }
+  },
+
+  updateCanvasLayout: async (userId: string, layout: ComponentLayout[]): Promise<UserPreferences> => {
+    await delay(300)
+    console.log('Mock API: Updated canvas layout', { userId, layoutCount: layout.length })
+    return mockApi.updateUserPreferences(userId, { canvasLayout: layout })
   }
 }
