@@ -7,6 +7,7 @@ const express_1 = __importDefault(require("express"));
 const cors_1 = __importDefault(require("cors"));
 const dotenv_1 = __importDefault(require("dotenv"));
 const client_1 = require("@prisma/client");
+const aiRoutes_1 = __importDefault(require("./controllers/ai/aiRoutes"));
 dotenv_1.default.config();
 const app = (0, express_1.default)();
 const prisma = new client_1.PrismaClient();
@@ -28,6 +29,8 @@ app.get('/api/db-health', async (req, res) => {
         res.status(500).json({ status: 'error', database: 'disconnected' });
     }
 });
+// AI planning service routes
+app.use('/api/ai', aiRoutes_1.default);
 // Graceful shutdown
 process.on('SIGINT', async () => {
     await prisma.$disconnect();
