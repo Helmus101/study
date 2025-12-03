@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import { PrismaClient } from '@prisma/client';
+import aiRoutes from './controllers/ai/aiRoutes';
 
 dotenv.config();
 
@@ -27,6 +28,9 @@ app.get('/api/db-health', async (req, res) => {
     res.status(500).json({ status: 'error', database: 'disconnected' });
   }
 });
+
+// AI planning service routes
+app.use('/api/ai', aiRoutes);
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
