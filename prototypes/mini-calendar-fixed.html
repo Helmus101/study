@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mini Calendar - Fixed Canvas Layout</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+        
+        h1 {
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 24px;
+        }
+        
+        .subtitle {
+            color: #666;
+            margin-bottom: 24px;
+            font-size: 14px;
+        }
+        
+        /* Fixed Canvas Layout */
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            grid-template-rows: auto 1fr;
+            gap: 16px;
+            min-height: 600px;
+        }
+        
+        .month-view {
+            grid-column: 1;
+            grid-row: 1 / 3;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+        }
+        
+        .month-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+        }
+        
+        .month-name {
+            font-weight: 600;
+            font-size: 18px;
+        }
+        
+        .nav-buttons button {
+            background: none;
+            border: 1px solid #e0e0e0;
+            border-radius: 4px;
+            padding: 4px 8px;
+            cursor: pointer;
+            margin-left: 4px;
+        }
+        
+        .nav-buttons button:hover {
+            background: #f0f0f0;
+        }
+        
+        .calendar-days {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 4px;
+        }
+        
+        .day-header {
+            text-align: center;
+            font-size: 11px;
+            font-weight: 600;
+            color: #666;
+            padding: 4px;
+        }
+        
+        .day {
+            aspect-ratio: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 13px;
+            position: relative;
+        }
+        
+        .day:hover {
+            background: #f0f0f0;
+        }
+        
+        .day.today {
+            background: #1976d2;
+            color: white;
+            font-weight: 600;
+        }
+        
+        .day.has-events::after {
+            content: '';
+            position: absolute;
+            bottom: 4px;
+            width: 4px;
+            height: 4px;
+            background: #ff5722;
+            border-radius: 50%;
+        }
+        
+        .day.today.has-events::after {
+            background: white;
+        }
+        
+        .exam-countdown {
+            grid-column: 2;
+            grid-row: 1;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+        }
+        
+        .countdown-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+        }
+        
+        .countdown-list {
+            display: flex;
+            gap: 16px;
+        }
+        
+        .countdown-item {
+            background: rgba(255,255,255,0.2);
+            border-radius: 8px;
+            padding: 12px;
+            flex: 1;
+        }
+        
+        .countdown-days {
+            font-size: 32px;
+            font-weight: 700;
+            margin-bottom: 4px;
+        }
+        
+        .countdown-label {
+            font-size: 12px;
+            opacity: 0.9;
+        }
+        
+        .event-list {
+            grid-column: 2;
+            grid-row: 2;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 16px;
+            overflow-y: auto;
+        }
+        
+        .event-list-title {
+            font-size: 16px;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+        }
+        
+        .event {
+            display: flex;
+            gap: 12px;
+            padding: 12px;
+            border-left: 3px solid #4caf50;
+            background: #f9f9f9;
+            border-radius: 4px;
+            margin-bottom: 8px;
+        }
+        
+        .event.pronote {
+            border-left-color: #2196f3;
+        }
+        
+        .event.google {
+            border-left-color: #f44336;
+        }
+        
+        .event-time {
+            font-size: 12px;
+            color: #666;
+            min-width: 80px;
+        }
+        
+        .event-details {
+            flex: 1;
+        }
+        
+        .event-title {
+            font-weight: 600;
+            margin-bottom: 2px;
+        }
+        
+        .event-location {
+            font-size: 12px;
+            color: #666;
+        }
+        
+        .event-source {
+            font-size: 10px;
+            text-transform: uppercase;
+            background: rgba(0,0,0,0.1);
+            padding: 2px 6px;
+            border-radius: 3px;
+            margin-left: auto;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🗓️ Mini Calendar - Fixed Canvas Layout</h1>
+        <p class="subtitle">Prototype A: Fixed grid layout with month view, exam countdown, and event list</p>
+        
+        <div class="calendar-grid">
+            <!-- Month View -->
+            <div class="month-view">
+                <div class="month-header">
+                    <span class="month-name">December 2024</span>
+                    <div class="nav-buttons">
+                        <button>◀</button>
+                        <button>▶</button>
+                    </div>
+                </div>
+                <div class="calendar-days">
+                    <div class="day-header">Su</div>
+                    <div class="day-header">Mo</div>
+                    <div class="day-header">Tu</div>
+                    <div class="day-header">We</div>
+                    <div class="day-header">Th</div>
+                    <div class="day-header">Fr</div>
+                    <div class="day-header">Sa</div>
+                    
+                    <div class="day">1</div>
+                    <div class="day has-events">2</div>
+                    <div class="day today has-events">3</div>
+                    <div class="day">4</div>
+                    <div class="day has-events">5</div>
+                    <div class="day">6</div>
+                    <div class="day">7</div>
+                    <div class="day has-events">8</div>
+                    <div class="day">9</div>
+                    <div class="day">10</div>
+                    <div class="day has-events">11</div>
+                    <div class="day">12</div>
+                    <div class="day">13</div>
+                    <div class="day">14</div>
+                    <div class="day has-events">15</div>
+                    <div class="day">16</div>
+                    <div class="day">17</div>
+                    <div class="day has-events">18</div>
+                    <div class="day">19</div>
+                    <div class="day">20</div>
+                    <div class="day">21</div>
+                    <div class="day has-events">22</div>
+                    <div class="day">23</div>
+                    <div class="day">24</div>
+                    <div class="day">25</div>
+                    <div class="day">26</div>
+                    <div class="day">27</div>
+                    <div class="day">28</div>
+                    <div class="day">29</div>
+                    <div class="day">30</div>
+                    <div class="day">31</div>
+                </div>
+            </div>
+            
+            <!-- Exam Countdown -->
+            <div class="exam-countdown">
+                <div class="countdown-title">📚 Upcoming Exams</div>
+                <div class="countdown-list">
+                    <div class="countdown-item">
+                        <div class="countdown-days">12</div>
+                        <div class="countdown-label">days until Math Final</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-days">18</div>
+                        <div class="countdown-label">days until Physics Test</div>
+                    </div>
+                    <div class="countdown-item">
+                        <div class="countdown-days">25</div>
+                        <div class="countdown-label">days until Chemistry Exam</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Event List -->
+            <div class="event-list">
+                <div class="event-list-title">Today's Schedule</div>
+                
+                <div class="event pronote">
+                    <div class="event-time">08:00 - 09:00</div>
+                    <div class="event-details">
+                        <div class="event-title">Mathematics</div>
+                        <div class="event-location">Room 205 - Prof. Martin</div>
+                    </div>
+                    <div class="event-source">Pronote</div>
+                </div>
+                
+                <div class="event google">
+                    <div class="event-time">10:00 - 10:30</div>
+                    <div class="event-details">
+                        <div class="event-title">Study Group Meeting</div>
+                        <div class="event-location">Library</div>
+                    </div>
+                    <div class="event-source">Google</div>
+                </div>
+                
+                <div class="event pronote">
+                    <div class="event-time">11:00 - 12:00</div>
+                    <div class="event-details">
+                        <div class="event-title">Physics Lab</div>
+                        <div class="event-location">Lab 3 - Prof. Dubois</div>
+                    </div>
+                    <div class="event-source">Pronote</div>
+                </div>
+                
+                <div class="event google">
+                    <div class="event-time">14:00 - 15:00</div>
+                    <div class="event-details">
+                        <div class="event-title">Project Team Meeting</div>
+                        <div class="event-location">Online - Google Meet</div>
+                    </div>
+                    <div class="event-source">Google</div>
+                </div>
+                
+                <div class="event pronote">
+                    <div class="event-time">15:30 - 17:00</div>
+                    <div class="event-details">
+                        <div class="event-title">Chemistry</div>
+                        <div class="event-location">Room 108 - Prof. Laurent</div>
+                    </div>
+                    <div class="event-source">Pronote</div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
