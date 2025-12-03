@@ -96,3 +96,88 @@ a:hover {
 .scrollbar-thin::-webkit-scrollbar-thumb:hover {
   background: var(--text-tertiary);
 }
+
+/* Drag and Drop Styles */
+.resize-enabled {
+  position: relative;
+}
+
+.resize-hover .resize-handle {
+  opacity: 1;
+}
+
+.resize-handle {
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+/* Drag overlay styles */
+.drag-overlay {
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Drop zone indicators */
+.drop-zone {
+  border: 2px dashed var(--color-primary);
+  background-color: rgba(59, 130, 246, 0.1);
+  border-radius: 8px;
+}
+
+.drop-zone-active {
+  border-color: var(--color-primary-dark);
+  background-color: rgba(59, 130, 246, 0.2);
+}
+
+/* Grid snap visual feedback */
+.grid-snap {
+  background-image: 
+    linear-gradient(rgba(0, 0, 0, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 0, 0, 0.05) 1px, transparent 1px);
+  background-size: 20px 20px;
+}
+
+/* Component being dragged */
+.dragging {
+  cursor: grabbing !important;
+  user-select: none;
+  transition: none !important;
+}
+
+/* Component being resized */
+.resizing {
+  cursor: nwse-resize !important;
+  user-select: none;
+}
+
+/* Visual feedback for draggable areas */
+.draggable-area {
+  position: relative;
+}
+
+.draggable-area::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: var(--color-primary);
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  cursor: move;
+}
+
+.draggable-area:hover::before {
+  opacity: 0.6;
+}
+
+/* Performance optimizations */
+.canvas-component {
+  will-change: transform;
+  contain: layout style paint;
+}
+
+.canvas-component.dragging {
+  will-change: transform, opacity;
+}

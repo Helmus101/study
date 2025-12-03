@@ -6,7 +6,7 @@ export function LayoutToggle() {
 
   const options: { label: string; value: LayoutMode; description: string }[] = [
     { label: 'Fixed Layout', value: 'fixed', description: 'Locked sections for focus' },
-    { label: 'Customizable (beta)', value: 'customizable', description: 'Experimental drag + resize planned' }
+    { label: 'Customizable', value: 'customizable', description: 'Drag & drop components with resizing' }
   ]
 
   return (
