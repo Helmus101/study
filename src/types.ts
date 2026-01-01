@@ -159,3 +159,34 @@ export interface StudySession {
   flashcards: Flashcard[]
   quiz: QuizQuestion[]
 }
+
+// Anqer Lead Magnet types
+export interface SnapshotSource {
+  name: string
+  url: string
+  date: string
+  snippet: string
+}
+
+export interface SnapshotResult {
+  id: string
+  entityName: string
+  summary: string
+  keyPoints: string[]
+  sources: SnapshotSource[]
+  analyzedAt: string
+}
+
+export interface SearchHistoryItem {
+  entityName: string
+  searchedAt: string
+  resultId: string
+}
+
+export type SoftWallType = 'save' | 'monitor' | 'note' | null
+
+export interface WaitlistSubmission {
+  email: string
+  submittedAt: string
+  entityContext?: string
+}
