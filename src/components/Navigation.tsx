@@ -1,8 +1,12 @@
-import { NavLink } from 'react-router-dom'
-import { Brain, LayoutDashboard, CheckSquare, PenSquare } from 'lucide-react'
+import { NavLink, useLocation } from 'react-router-dom'
+import { Brain, LayoutDashboard, CheckSquare, PenSquare, Search } from 'lucide-react'
 
 export function Navigation() {
+  const location = useLocation()
+  const isLeadMagnet = ['/', '/results', '/waitlist', '/confirmation'].includes(location.pathname)
+
   const navItems = [
+    { label: 'Snapshot', to: '/', icon: Search },
     { label: 'Dashboard', to: '/dashboard', icon: LayoutDashboard },
     { label: 'Task Manager', to: '/tasks', icon: CheckSquare },
     { label: 'Study Canvas', to: '/canvas', icon: PenSquare }
@@ -11,10 +15,10 @@ export function Navigation() {
   return (
     <nav className="bg-[var(--bg-primary)] border-b border-[var(--border-color)] sticky top-0 z-10">
       <div className="max-w-6xl mx-auto flex flex-col gap-3 px-6 py-4 md:flex-row md:items-center md:justify-between">
-        <div className="flex items-center gap-3 text-xl font-bold text-[var(--text-primary)]">
+        <NavLink to="/" className="flex items-center gap-3 text-xl font-bold text-[var(--text-primary)] hover:opacity-80 transition">
           <Brain className="w-7 h-7 text-[var(--color-primary)]" />
-          Proactive AI Workspace
-        </div>
+          {isLeadMagnet ? 'Anqer' : 'Proactive AI Workspace'}
+        </NavLink>
         <div className="flex items-center gap-2 text-sm font-medium">
           {navItems.map(item => {
             const Icon = item.icon

@@ -1,7 +1,7 @@
 import type { ButtonHTMLAttributes, ReactNode } from 'react'
 
 interface ButtonProps extends ButtonHTMLAttributes<HTMLButtonElement> {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'danger'
+  variant?: 'primary' | 'secondary' | 'ghost' | 'danger' | 'outline'
   size?: 'sm' | 'md' | 'lg'
   children: ReactNode
 }
@@ -19,7 +19,8 @@ export function Button({
     primary: 'bg-[var(--color-primary)] text-white hover:bg-[var(--color-primary-dark)]',
     secondary: 'bg-[var(--bg-tertiary)] text-[var(--text-primary)] hover:bg-[var(--border-color)]',
     ghost: 'bg-transparent text-[var(--text-primary)] hover:bg-[var(--bg-tertiary)]',
-    danger: 'bg-[var(--color-danger)] text-white hover:bg-red-600'
+    danger: 'bg-[var(--color-danger)] text-white hover:bg-red-600',
+    outline: 'bg-transparent border-2 border-[var(--border-color)] text-[var(--text-primary)] hover:border-[var(--color-primary)] hover:text-[var(--color-primary)]'
   }
   
   const sizeStyles = {
