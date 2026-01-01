@@ -358,5 +358,67 @@ export const mockApi = {
     await delay(300)
     console.log('Mock API: Updated canvas layout', { userId, layoutCount: layout.length })
     return mockApi.updateUserPreferences(userId, { canvasLayout: layout })
+  },
+
+  // Anqer Lead Magnet API
+  analyzeEntity: async (entityName: string): Promise<import('../types').SnapshotResult> => {
+    await delay(1500) // Realistic analysis delay
+    
+    // Mock analysis results
+    const mockResults: Record<string, import('../types').SnapshotResult> = {
+      default: {
+        id: `snapshot-${Date.now()}`,
+        entityName,
+        summary: `${entityName} is a notable figure in their field. Recent activities show continued engagement with key projects and initiatives. Public information suggests ongoing work in multiple areas.`,
+        keyPoints: [
+          `Active involvement in recent projects as of ${new Date().getFullYear()}`,
+          'Multiple public appearances and contributions documented',
+          'Strong presence across various platforms and channels',
+          'Consistent track record in their area of expertise'
+        ],
+        sources: [
+          {
+            name: 'Recent Article',
+            url: `https://example.com/article-${entityName.toLowerCase().replace(/\s+/g, '-')}`,
+            date: new Date(Date.now() - 7 * 86400000).toISOString(),
+            snippet: `Latest insights from ${entityName} regarding their current work and future direction...`
+          },
+          {
+            name: 'Professional Profile',
+            url: `https://linkedin.com/in/${entityName.toLowerCase().replace(/\s+/g, '-')}`,
+            date: new Date(Date.now() - 30 * 86400000).toISOString(),
+            snippet: `Profile highlights ${entityName}'s experience and recent achievements...`
+          },
+          {
+            name: 'Industry News',
+            url: 'https://industry-news.com/latest',
+            date: new Date(Date.now() - 14 * 86400000).toISOString(),
+            snippet: `${entityName} mentioned in connection with recent developments in the field...`
+          }
+        ],
+        analyzedAt: new Date().toISOString()
+      }
+    }
+    
+    return mockResults.default
+  },
+
+  submitWaitlist: async (email: string, entityContext?: string): Promise<import('../types').WaitlistSubmission> => {
+    await delay(800)
+    console.log('Mock API: Waitlist submission', { email, entityContext })
+    
+    return {
+      email,
+      submittedAt: new Date().toISOString(),
+      entityContext
+    }
+  },
+
+  sendConfirmationEmail: async (email: string, entityName?: string): Promise<{ success: boolean }> => {
+    await delay(500)
+    console.log('Mock API: Confirmation email sent', { email, entityName })
+    
+    // Simulate email sending
+    return { success: true }
   }
 }
